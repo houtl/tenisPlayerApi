@@ -5,12 +5,16 @@ export let db: mongoDB.Db;
 
 export const initDB = async (): Promise<mongoDB.MongoClient> => {
     let connectionString: string = 'mongodb://localhost:27017';
+    let config = {}
 
     if (process.env.NODE_ENV === 'production') {
         connectionString = await getSecret();
+        config = {
+            tlsCAFile: '~/global-bundle.pem',
+        }
     }
 
-    const client: mongoDB.MongoClient = new mongoDB.MongoClient(connectionString);
+    const client: mongoDB.MongoClient = new mongoDB.MongoClient(connectionString, config);
     await client.connect();
     return client;
 };
