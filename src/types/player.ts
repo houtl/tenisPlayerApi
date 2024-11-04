@@ -1,4 +1,4 @@
-enum Sex {
+export enum Sex {
     Male = 'M',
     Female = 'F'
 }
@@ -27,17 +27,17 @@ interface Player {
     data: PlayerData;
 }
 
-interface PlayerEntity extends Player {
+export interface PlayerEntity extends Player {
     id: number;
 }
 
-interface PlayerDB extends Player {
+export interface PlayerDB extends Player {
     _id: string;
     playerId: number;
 }
 
 
-interface PlayerModel {
+export interface PlayerModel {
     getPlayers: (skip: number, limit: number) => Promise<PlayerEntity[]>;
     getPlayerById: (id: string) => Promise<PlayerEntity | null>;
 }

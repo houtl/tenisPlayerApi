@@ -18,6 +18,6 @@ export const getSecret = async (): Promise<string> => {
     } catch (error) {
         throw error;
     }
-    console.log(response)
+
     return response.SecretString || '';
 };

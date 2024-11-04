@@ -1,9 +1,9 @@
 import * as mongoDB from "mongodb";
 import { getSecret } from "./secretManager";
 
-export let client: mongoDB.MongoClient;
+export let db: mongoDB.Db;
 
-const initDB = async () => {
+export const initDB = async (): Promise<mongoDB.MongoClient> => {
     let connectionString: string = 'mongodb://localhost:27017';
 
     if (process.env.NODE_ENV === 'production') {
@@ -16,7 +16,7 @@ const initDB = async () => {
 };
 
 initDB().then((dbClient) => {
-    client = dbClient;
+    db = dbClient.db('tenisu');
 }).catch((error) => {
     console.error('Failed to initialize database:', error);
 });

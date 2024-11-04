@@ -1,3 +1,4 @@
+import { PlayerDB, PlayerEntity } from "../types/player";
 
 export const playerToPlayerEntity = (player: PlayerDB): PlayerEntity => {
     const playerEntity: PlayerEntity = {
