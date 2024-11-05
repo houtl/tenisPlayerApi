@@ -47,13 +47,8 @@ export const getGlobalStatistics = async (db: Db): Promise<Statistics> => {
             {
                 $group: {
                     _id: 0,
-                    playerBMIs: { $push: { $divide: ["$data.weight", { $pow: ["$data.height", 2] }] } },
-                    medianHeight: {
-                        $median: {
-                            input: "$data.height",
-                            method: "approximate",
-                        },
-                    },
+                    playerBMIs: { $push: { $divide: ["$data.weight", { $multiply: ["$data.height", "$data.height"] }] } },
+                    playerHeights: { $push: "$data.height" },
                 },
             },
             {
@@ -64,7 +59,26 @@ export const getGlobalStatistics = async (db: Db): Promise<Statistics> => {
             {
                 $project: {
                     averageBMI: 1,
-                    medianHeight: 1,
+                    medianHeight: {
+                        $let: {
+                            vars: {
+                                sortedHeights: { $sortArray: { input: "$playerHeights", sortBy: 1 } },
+                                size: { $size: "$playerHeights" }
+                            },
+                            in: {
+                                $cond: {
+                                    if: { $eq: [{ $mod: ["$$size", 2] }, 0] },
+                                    then: {
+                                        $avg: [
+                                            { $arrayElemAt: ["$$sortedHeights", { $divide: ["$$size", 2] }] },
+                                            { $arrayElemAt: ["$$sortedHeights", { $subtract: [{ $divide: ["$$size", 2] }, 1] }] }
+                                        ]
+                                    },
+                                    else: { $arrayElemAt: ["$$sortedHeights", { $floor: { $divide: ["$$size", 2] } }] }
+                                }
+                            }
+                        }
+                    },
                 },
             },
         ])

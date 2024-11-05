@@ -9,13 +9,16 @@ export const app = express();
 
 //get 100 players
 app.get('/players', async (req, res) => {
-    const { skip, limit } = req.query as { skip: string, limit: string };
+    const skip = Number(req.query.skip) || 0;
+    const limit = Number(req.query.limit) || 100;
+
 
     try {
         const players = await getPlayers(db, Number(skip), Number(limit));
         res.json(players);
     } catch (error) {
-        res.status(500).json(error);
+        console.error(error);
+        res.status(500).json({ message: `failed to get players` });
     }
 });
 
@@ -24,9 +27,13 @@ app.get('/player/:id', async (req, res) => {
     const id = req.params.id;
     try {
         const player = await getPlayerById(db, id);
+        if (!player) {
+            throw new Error(`Player with id ${req.params.id} not found`);
+        }
         res.json(player);
     } catch (error) {
-        res.status(500).json(error);
+        console.error(`Error fetching player by id ${req.params.id}:`, error);
+        res.status(500).json({ message: `failed to get player by id ${id}` });
     }
 });
 
@@ -36,7 +43,8 @@ app.get('/statistics', async (_req, res) => {
         const statistiques = await getGlobalStatistics(db);
         res.json(statistiques);
     } catch (error) {
-        res.status(500).json(error);
+        console.error("Failed to retrieve global statistics:", error);
+        res.status(500).json({ message: `failed to get global statistics` });
     }
 });
 

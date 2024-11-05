@@ -18,7 +18,7 @@ describe('API tests', () => {
 
         const response = await request(app).get('/players?skip=0&limit=100');
         expect(response.status).toBe(500);
-        expect(response.body).toEqual({});
+        expect(response.body).toEqual({ "message": "failed to get players" });
     });
 
     it('should handle errors in getting player by id', async () => {
@@ -26,7 +26,7 @@ describe('API tests', () => {
 
         const response = await request(app).get('/player/1');
         expect(response.status).toBe(500);
-        expect(response.body).toEqual({});
+        expect(response.body).toEqual({ "message": "failed to get player by id 1" });
     });
 
     it('should handle errors in getting statistics', async () => {
@@ -34,7 +34,7 @@ describe('API tests', () => {
 
         const response = await request(app).get('/statistics');
         expect(response.status).toBe(500);
-        expect(response.body).toEqual({});
+        expect(response.body).toEqual({ "message": "failed to get global statistics" });
     });
 
     it('should get players', async () => {
