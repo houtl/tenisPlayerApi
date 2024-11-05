@@ -10,7 +10,7 @@ export const initDB = async (): Promise<mongoDB.MongoClient> => {
     if (process.env.NODE_ENV === 'production') {
         connectionString = await getSecret();
         config = {
-            tlsCAFile: '~/global-bundle.pem',
+            tlsCAFile: './global-bundle.pem',
         }
     }
 

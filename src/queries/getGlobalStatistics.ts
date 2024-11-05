@@ -59,35 +59,21 @@ export const getGlobalStatistics = async (db: Db): Promise<Statistics> => {
             {
                 $project: {
                     averageBMI: 1,
-                    medianHeight: {
-                        $let: {
-                            vars: {
-                                sortedHeights: { $sortArray: { input: "$playerHeights", sortBy: 1 } },
-                                size: { $size: "$playerHeights" }
-                            },
-                            in: {
-                                $cond: {
-                                    if: { $eq: [{ $mod: ["$$size", 2] }, 0] },
-                                    then: {
-                                        $avg: [
-                                            { $arrayElemAt: ["$$sortedHeights", { $divide: ["$$size", 2] }] },
-                                            { $arrayElemAt: ["$$sortedHeights", { $subtract: [{ $divide: ["$$size", 2] }, 1] }] }
-                                        ]
-                                    },
-                                    else: { $arrayElemAt: ["$$sortedHeights", { $floor: { $divide: ["$$size", 2] } }] }
-                                }
-                            }
-                        }
-                    },
+                    playerHeights: 1,
                 },
             },
         ])
         .toArray();
 
+    const heights = heightAndBMI[0].playerHeights.sort((a: number, b: number) => a - b);
+    const medianHeight = heights.length % 2 === 0
+        ? (heights[heights.length / 2 - 1] + heights[heights.length / 2]) / 2
+        : heights[Math.floor(heights.length / 2)];
+
     return {
         bestCountry: winRatio[0]._id,
         bestCountryWinRatio: winRatio[0].winRatio,
-        medianHeight: heightAndBMI[0].medianHeight,
+        medianHeight,
         averageBMI: heightAndBMI[0].averageBMI,
     };
 };
